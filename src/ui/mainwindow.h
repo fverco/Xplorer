@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class QFileSystemModel;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -19,6 +21,7 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui; ///< The object containing all the ui elements.
+    Ui::MainWindow *ui;             ///< The object containing all the ui elements.
+    QFileSystemModel *fileModel;    ///< The model that retrieves information about the file system.
 };
 #endif // MAINWINDOW_H

@@ -2,14 +2,18 @@
 #include "ui_mainwindow.h"
 
 #include <QSplitter>
+#include <QFileSystemModel>
+#include <QStandardPaths>
+#include <QtDebug>
 
 /*!
  * \brief The constructor of the main window.
  * \param parent = The QWidget to which this window is bound to.
  */
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      fileModel(new QFileSystemModel(this))
 {
     ui->setupUi(this);
 
@@ -18,6 +22,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->hLayoutFiles->addWidget(viewSplitter);
     viewSplitter->addWidget(ui->tvFileSys);
     viewSplitter->addWidget(ui->lvCurFolder);
+
+    // Add file model to the file views.
+    fileModel->setRootPath(QDir::homePath());
+    fileModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
+    ui->tvFileSys->setModel(fileModel);
+    ui->tvFileSys->setRootIndex(fileModel->index(QDir::homePath()));
+    ui->lvCurFolder->setModel(fileModel);
+    ui->lvCurFolder->setRootIndex(fileModel->index(QDir::homePath()));
+
 }
 
 /*!
