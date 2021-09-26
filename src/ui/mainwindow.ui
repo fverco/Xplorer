@@ -23,7 +23,10 @@
          <widget class="QTreeView" name="tvFileSys"/>
         </item>
         <item>
-         <widget class="QListView" name="lvCurFolder"/>
+         <widget class="QListView" name="lvExplorerA"/>
+        </item>
+        <item>
+         <widget class="QListView" name="lvExplorerB"/>
         </item>
        </layout>
       </item>
