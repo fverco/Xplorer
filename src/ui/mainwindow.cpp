@@ -63,9 +63,14 @@ void MainWindow::initializeExplorerUi()
     ui->cbPathExplorer1->addItem(fileModel1->rootPath());
     ui->cbPathExplorer2->addItem(fileModel2->rootPath());
     connect(fileModel1, &QFileSystemModel::rootPathChanged, ui->cbPathExplorer1, [this](){
-                ui->cbPathExplorer1->setCurrentText(fileModel1->rootPath());
-            });
+        ui->cbPathExplorer1->setCurrentText(fileModel1->rootPath());
+    });
 
+    // Assign a file icon provider to each model.
+    QFileIconProvider *iconProvider(new QFileIconProvider());
+    dirModel->setIconProvider(iconProvider);
+    fileModel1->setIconProvider(iconProvider);
+    fileModel2->setIconProvider(iconProvider);
 }
 
 
