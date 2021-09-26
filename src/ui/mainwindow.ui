@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>521</height>
+    <width>765</width>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,33 +23,55 @@
          <widget class="QTreeView" name="tvFileSys"/>
         </item>
         <item>
-         <widget class="QListView" name="lvExplorerA"/>
+         <widget class="QGroupBox" name="gbExplorer1">
+          <property name="title">
+           <string>Explorer 1</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <layout class="QVBoxLayout" name="vLayoutExplorer1">
+             <item>
+              <widget class="QComboBox" name="cbPathExplorer1">
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QListView" name="lvExplorer1"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
         </item>
         <item>
-         <widget class="QListView" name="lvExplorerB"/>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="hLayoutButtons">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QGroupBox" name="gbExplorer2">
+          <property name="title">
+           <string>Explorer 2</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
+          <property name="flat">
+           <bool>true</bool>
           </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnExit">
-          <property name="text">
-           <string>Exit</string>
-          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <layout class="QVBoxLayout" name="vLayoutExplorer2">
+             <item>
+              <widget class="QComboBox" name="cbPathExplorer2">
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QListView" name="lvExplorer2"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
@@ -63,12 +85,24 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>521</width>
+     <width>765</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

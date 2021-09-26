@@ -21,18 +21,18 @@ MainWindow::MainWindow(QWidget *parent)
     QSplitter *viewSplitter(new QSplitter(this));
     ui->hLayoutFiles->addWidget(viewSplitter);
     viewSplitter->addWidget(ui->tvFileSys);
-    viewSplitter->addWidget(ui->lvExplorerA);
-    viewSplitter->addWidget(ui->lvExplorerB);
+    viewSplitter->addWidget(ui->gbExplorer1);
+    viewSplitter->addWidget(ui->gbExplorer2);
 
     // Add file model to the file views.
     fileModel->setRootPath(QDir::homePath());
     fileModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
     ui->tvFileSys->setModel(fileModel);
     ui->tvFileSys->setRootIndex(fileModel->index(QDir::homePath()));
-    ui->lvExplorerA->setModel(fileModel);
-    ui->lvExplorerA->setRootIndex(fileModel->index(QDir::homePath()));
-    ui->lvExplorerB->setModel(fileModel);
-    ui->lvExplorerB->setRootIndex(fileModel->index(QDir::homePath()));
+    ui->lvExplorer1->setModel(fileModel);
+    ui->lvExplorer1->setRootIndex(fileModel->index(QDir::homePath()));
+    ui->lvExplorer2->setModel(fileModel);
+    ui->lvExplorer2->setRootIndex(fileModel->index(QDir::homePath()));
 
 }
 
