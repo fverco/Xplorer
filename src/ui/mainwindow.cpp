@@ -61,9 +61,13 @@ void MainWindow::initializeExplorerUi()
 
     // Assign current directory of each explorer to their combo boxes.
     ui->cbPathExplorer1->addItem(fileModel1->rootPath());
-    ui->cbPathExplorer2->addItem(fileModel2->rootPath());
     connect(fileModel1, &QFileSystemModel::rootPathChanged, ui->cbPathExplorer1, [this](){
         ui->cbPathExplorer1->setCurrentText(fileModel1->rootPath());
+    });
+
+    ui->cbPathExplorer2->addItem(fileModel2->rootPath());
+    connect(fileModel2, &QFileSystemModel::rootPathChanged, ui->cbPathExplorer2, [this](){
+        ui->cbPathExplorer2->setCurrentText(fileModel2->rootPath());
     });
 
     // Assign a file icon provider to each model.
@@ -73,4 +77,23 @@ void MainWindow::initializeExplorerUi()
     fileModel2->setIconProvider(iconProvider);
 }
 
+/*!
+ * \brief Function executed when a file/folder in Explorer 1 is double clicked.
+ * \param index = The index of the file/folder
+ */
+void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
+{
+    fileModel1->setRootPath(fileModel1->rootPath() + "/" + index.data().toString());
+    ui->lvExplorer1->setRootIndex(fileModel1->index(fileModel1->rootPath()));
+}
+
+/*!
+ * \brief Function executed when a file/folder in Explorer 2 is double clicked.
+ * \param index = The index of the file/folder
+ */
+void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
+{
+    fileModel2->setRootPath(fileModel2->rootPath() + "/" + index.data().toString());
+    ui->lvExplorer2->setRootIndex(fileModel2->index(fileModel2->rootPath()));
+}
 
