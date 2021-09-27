@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void closeApp();
 
 private slots:
     void on_lvExplorer1_doubleClicked(const QModelIndex &index);

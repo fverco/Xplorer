@@ -32,6 +32,14 @@ MainWindow::~MainWindow()
 }
 
 /*!
+ * \brief Closes the application.
+ */
+void MainWindow::closeApp()
+{
+    this->close();
+}
+
+/*!
  * \brief Initializes the core UI components for the file explorers.
  */
 void MainWindow::initializeExplorerUi()
@@ -81,6 +89,9 @@ void MainWindow::initializeExplorerUi()
     ui->btnForwardExplorer1->setFixedWidth(50);
     ui->btnBackExplorer2->setFixedWidth(50);
     ui->btnForwardExplorer2->setFixedWidth(50);
+
+    // Connect standard buttons to their functions.
+    connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::closeApp);
 }
 
 /*!
