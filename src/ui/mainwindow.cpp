@@ -7,6 +7,7 @@
 #include <QStandardPaths>
 #include <QtDebug>
 #include <QFileIconProvider>
+#include <QFileInfo>
 
 /*!
  * \brief The constructor of the main window.
@@ -100,8 +101,12 @@ void MainWindow::initializeExplorerUi()
  */
 void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
 {
-    fileModel1->setRootPath(fileModel1->rootPath() + "/" + index.data().toString());
-    ui->lvExplorer1->setRootIndex(fileModel1->index(fileModel1->rootPath()));
+    QFileInfo newDir(fileModel1->rootPath() + "/" + index.data().toString());
+
+    if (newDir.isDir()) {
+        fileModel1->setRootPath(newDir.path() + "/" + newDir.fileName());
+        ui->lvExplorer1->setRootIndex(fileModel1->index(fileModel1->rootPath()));
+    }
 }
 
 /*!
@@ -110,7 +115,11 @@ void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
  */
 void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
 {
-    fileModel2->setRootPath(fileModel2->rootPath() + "/" + index.data().toString());
-    ui->lvExplorer2->setRootIndex(fileModel2->index(fileModel2->rootPath()));
+    QFileInfo newDir(fileModel2->rootPath() + "/" + index.data().toString());
+
+    if (newDir.isDir()) {
+        fileModel2->setRootPath(newDir.path() + "/" + newDir.fileName());
+        ui->lvExplorer2->setRootIndex(fileModel2->index(fileModel2->rootPath()));
+    }
 }
 
