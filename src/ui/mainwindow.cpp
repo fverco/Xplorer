@@ -75,6 +75,12 @@ void MainWindow::initializeExplorerUi()
     dirModel->setIconProvider(iconProvider);
     fileModel1->setIconProvider(iconProvider);
     fileModel2->setIconProvider(iconProvider);
+
+    // Set fixed width of the back and forward buttons.
+    ui->btnBackExplorer1->setFixedWidth(50);
+    ui->btnForwardExplorer1->setFixedWidth(50);
+    ui->btnBackExplorer2->setFixedWidth(50);
+    ui->btnForwardExplorer2->setFixedWidth(50);
 }
 
 /*!
