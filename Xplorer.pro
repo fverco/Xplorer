@@ -10,11 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
+    src/types/actionmanager.cpp \
     src/types/explorersplitter.cpp \
     src/types/explorersplitterhandle.cpp \
     src/ui/mainwindow.cpp
 
 HEADERS += \
+    src/types/actionmanager.h \
     src/types/explorersplitter.h \
     src/types/explorersplitterhandle.h \
     src/ui/mainwindow.h
