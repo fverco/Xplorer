@@ -8,6 +8,7 @@
 #include <QtDebug>
 #include <QFileIconProvider>
 #include <QFileInfo>
+#include <QMessageBox>
 
 /*!
  * \brief The constructor of the main window.
@@ -18,7 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
       ui(new Ui::MainWindow),
       dirModel(new QFileSystemModel(this)),
       fileModel1(new QFileSystemModel(this)),
-      fileModel2(new QFileSystemModel(this))
+      fileModel2(new QFileSystemModel(this)),
+      actionMan()
 {
     ui->setupUi(this);
     initializeExplorerUi();
@@ -106,6 +108,10 @@ void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
     if (newDir.isDir()) {
         fileModel1->setRootPath(newDir.path() + "/" + newDir.fileName());
         ui->lvExplorer1->setRootIndex(fileModel1->index(fileModel1->rootPath()));
+    } else {
+        if (!actionMan.openFile(newDir)) {
+            QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
+        }
     }
 }
 
@@ -120,6 +126,10 @@ void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
     if (newDir.isDir()) {
         fileModel2->setRootPath(newDir.path() + "/" + newDir.fileName());
         ui->lvExplorer2->setRootIndex(fileModel2->index(fileModel2->rootPath()));
+    } else {
+        if (!actionMan.openFile(newDir)) {
+            QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
+        }
     }
 }
 

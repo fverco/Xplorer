@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "../types/actionmanager.h"
+
 #include <QMainWindow>
 
 class QFileSystemModel;
@@ -30,6 +32,7 @@ private:
     QFileSystemModel *dirModel;      ///< The tree view's directory model.
     QFileSystemModel *fileModel1;    ///< Explorer 1's file model.
     QFileSystemModel *fileModel2;    ///< Explorer 2's file model.
+    ActionManager actionMan;         ///< The object responsible for performing actions on files.
 
     void initializeExplorerUi();
 };
