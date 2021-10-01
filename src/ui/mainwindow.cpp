@@ -3,8 +3,6 @@
 #include "../types/explorersplitter.h"
 
 #include <QSplitter>
-#include <QFileSystemModel>
-#include <QStandardPaths>
 #include <QtDebug>
 #include <QFileIconProvider>
 #include <QFileInfo>
@@ -18,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
       dirModel(new QFileSystemModel(this)),
-      fileModel1(new QFileSystemModel(this)),
-      fileModel2(new QFileSystemModel(this)),
+      explorerMan1(),
+      explorerMan2(),
       actionMan()
 {
     ui->setupUi(this);
@@ -60,32 +58,28 @@ void MainWindow::initializeExplorerUi()
     ui->tvFileSys->setModel(dirModel);
     ui->tvFileSys->setRootIndex(dirModel->index(QDir::homePath()));
 
-    fileModel1->setRootPath(QDir::homePath());
-    fileModel1->setFilter(QDir::AllEntries | QDir::NoDot);
-    ui->lvExplorer1->setModel(fileModel1);
-    ui->lvExplorer1->setRootIndex(fileModel1->index(QDir::homePath()));
+    ui->lvExplorer1->setModel(explorerMan1.getFileSystemModel().data());
+    ui->lvExplorer1->setRootIndex(explorerMan1.currentPathIndex());
 
-    fileModel2->setRootPath(QDir::homePath());
-    fileModel2->setFilter(QDir::AllEntries | QDir::NoDot);
-    ui->lvExplorer2->setModel(fileModel2);
-    ui->lvExplorer2->setRootIndex(fileModel2->index(QDir::homePath()));
+    ui->lvExplorer2->setModel(explorerMan2.getFileSystemModel().data());
+    ui->lvExplorer2->setRootIndex(explorerMan2.currentPathIndex());
 
     // Assign current directory of each explorer to their combo boxes.
-    ui->cbPathExplorer1->addItem(fileModel1->rootPath());
-    connect(fileModel1, &QFileSystemModel::rootPathChanged, ui->cbPathExplorer1, [this](){
-        ui->cbPathExplorer1->setCurrentText(fileModel1->rootPath());
+    ui->cbPathExplorer1->addItem(explorerMan1.currentPath());
+    connect(explorerMan1.getFileSystemModel().data(), &QFileSystemModel::rootPathChanged, ui->cbPathExplorer1, [this](){
+        ui->cbPathExplorer1->setCurrentText(explorerMan1.currentPath());
     });
 
-    ui->cbPathExplorer2->addItem(fileModel2->rootPath());
-    connect(fileModel2, &QFileSystemModel::rootPathChanged, ui->cbPathExplorer2, [this](){
-        ui->cbPathExplorer2->setCurrentText(fileModel2->rootPath());
+    ui->cbPathExplorer2->addItem(explorerMan2.currentPath());
+    connect(explorerMan2.getFileSystemModel().data(), &QFileSystemModel::rootPathChanged, ui->cbPathExplorer2, [this](){
+        ui->cbPathExplorer2->setCurrentText(explorerMan2.currentPath());
     });
 
     // Assign a file icon provider to each model.
     QFileIconProvider *iconProvider(new QFileIconProvider());
     dirModel->setIconProvider(iconProvider);
-    fileModel1->setIconProvider(iconProvider);
-    fileModel2->setIconProvider(iconProvider);
+    explorerMan1.getFileSystemModel()->setIconProvider(iconProvider);
+    explorerMan1.getFileSystemModel()->setIconProvider(iconProvider);
 
     // Set fixed width of the back and forward buttons.
     ui->btnBackExplorer1->setFixedWidth(50);
@@ -103,11 +97,11 @@ void MainWindow::initializeExplorerUi()
  */
 void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
 {
-    QFileInfo newDir(fileModel1->rootPath() + "/" + index.data().toString());
+    QFileInfo newDir(explorerMan1.currentPath() + "/" + index.data().toString());
 
     if (newDir.isDir()) {
-        fileModel1->setRootPath(newDir.path() + "/" + newDir.fileName());
-        ui->lvExplorer1->setRootIndex(fileModel1->index(fileModel1->rootPath()));
+        explorerMan1.setCurrentPath(newDir.path() + "/" + newDir.fileName());
+        ui->lvExplorer1->setRootIndex(explorerMan1.currentPathIndex());
     } else {
         if (!actionMan.openFile(newDir)) {
             QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
@@ -121,11 +115,11 @@ void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
  */
 void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
 {
-    QFileInfo newDir(fileModel2->rootPath() + "/" + index.data().toString());
+    QFileInfo newDir(explorerMan2.currentPath() + "/" + index.data().toString());
 
     if (newDir.isDir()) {
-        fileModel2->setRootPath(newDir.path() + "/" + newDir.fileName());
-        ui->lvExplorer2->setRootIndex(fileModel2->index(fileModel2->rootPath()));
+        explorerMan2.setCurrentPath(newDir.path() + "/" + newDir.fileName());
+        ui->lvExplorer2->setRootIndex(explorerMan2.currentPathIndex());
     } else {
         if (!actionMan.openFile(newDir)) {
             QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");

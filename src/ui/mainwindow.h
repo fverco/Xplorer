@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "../types/actionmanager.h"
+#include "../types/explorermanager.h"
 
 #include <QMainWindow>
 
@@ -30,8 +31,8 @@ private slots:
 private:
     Ui::MainWindow *ui;              ///< The object containing all the ui elements.
     QFileSystemModel *dirModel;      ///< The tree view's directory model.
-    QFileSystemModel *fileModel1;    ///< Explorer 1's file model.
-    QFileSystemModel *fileModel2;    ///< Explorer 2's file model.
+    ExplorerManager explorerMan1;    ///< The object responsible for managing explorer 1.
+    ExplorerManager explorerMan2;    ///< The object responsible for managing explorer 2.
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
 
     void initializeExplorerUi();
