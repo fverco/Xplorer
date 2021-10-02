@@ -14,6 +14,7 @@ SOURCES += \
     src/types/explorermanager.cpp \
     src/types/explorersplitter.cpp \
     src/types/explorersplitterhandle.cpp \
+    src/types/opendircommand.cpp \
     src/ui/mainwindow.cpp
 
 HEADERS += \
@@ -21,6 +22,7 @@ HEADERS += \
     src/types/explorermanager.h \
     src/types/explorersplitter.h \
     src/types/explorersplitterhandle.h \
+    src/types/opendircommand.h \
     src/ui/mainwindow.h
 
 FORMS += \
