@@ -87,8 +87,10 @@ void MainWindow::initializeExplorerUi()
     ui->btnBackExplorer2->setFixedWidth(50);
     ui->btnForwardExplorer2->setFixedWidth(50);
 
-    // Connect standard buttons to their functions.
+    // Connect buttons and actions to their functions.
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::closeApp);
+    connect(&explorerMan1, &ExplorerManager::pathChanged, this, &MainWindow::refreshExplorer1);
+    connect(&explorerMan2, &ExplorerManager::pathChanged, this, &MainWindow::refreshExplorer2);
 }
 
 /*!
@@ -101,7 +103,6 @@ void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
 
     if (newDir.isDir()) {
         explorerMan1.setCurrentPath(newDir.path() + "/" + newDir.fileName());
-        ui->lvExplorer1->setRootIndex(explorerMan1.currentPathIndex());
     } else {
         if (!actionMan.openFile(newDir)) {
             QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
@@ -119,11 +120,59 @@ void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
 
     if (newDir.isDir()) {
         explorerMan2.setCurrentPath(newDir.path() + "/" + newDir.fileName());
-        ui->lvExplorer2->setRootIndex(explorerMan2.currentPathIndex());
     } else {
         if (!actionMan.openFile(newDir)) {
             QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
         }
     }
 }
+
+/*!
+ * \brief Performs an undo action when the back button in Explorer 1 is clicked.
+ */
+void MainWindow::on_btnBackExplorer1_clicked()
+{
+    explorerMan1.undoPathAction->trigger();
+}
+
+/*!
+ * \brief Performs a redo action when the forward button in Explorer 1 is clicked.
+ */
+void MainWindow::on_btnForwardExplorer1_clicked()
+{
+    explorerMan1.redoPathAction->trigger();
+}
+
+/*!
+ * \brief Performs an undo action when the back button in Explorer 2 is clicked.
+ */
+void MainWindow::on_btnBackExplorer2_clicked()
+{
+    explorerMan2.undoPathAction->trigger();
+}
+
+/*!
+ * \brief Performs a redo action when the forward button in Explorer 2 is clicked.
+ */
+void MainWindow::on_btnForwardExplorer2_clicked()
+{
+    explorerMan2.redoPathAction->trigger();
+}
+
+/*!
+ * \brief Refreshes the file view of Explorer 1.
+ */
+void MainWindow::refreshExplorer1()
+{
+    ui->lvExplorer1->setRootIndex(explorerMan1.currentPathIndex());
+}
+
+/*!
+ * \brief Refreshes the file view of Explorer 2.
+ */
+void MainWindow::refreshExplorer2()
+{
+    ui->lvExplorer2->setRootIndex(explorerMan2.currentPathIndex());
+}
+
 

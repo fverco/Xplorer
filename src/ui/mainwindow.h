@@ -27,6 +27,12 @@ public:
 private slots:
     void on_lvExplorer1_doubleClicked(const QModelIndex &index);
     void on_lvExplorer2_doubleClicked(const QModelIndex &index);
+    void on_btnBackExplorer1_clicked();
+    void on_btnForwardExplorer1_clicked();
+    void on_btnBackExplorer2_clicked();
+    void on_btnForwardExplorer2_clicked();
+    void refreshExplorer1();
+    void refreshExplorer2();
 
 private:
     Ui::MainWindow *ui;              ///< The object containing all the ui elements.
