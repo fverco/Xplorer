@@ -1,15 +1,30 @@
 #include "explorermanager.h"
+#include "opendircommand.h"
+
+#include <QAction>
 
 /*!
  * \brief The constructor
+ * \param parent = The QObject to which this object is bound
  * \note This will initialize fileModel with the home path as its current path and will display all files and folders as well as the "DotDot" entry.
  */
-ExplorerManager::ExplorerManager() :
+ExplorerManager::ExplorerManager(QObject *parent) :
+    QObject(parent),
     fileModel(new QFileSystemModel()),
-    dirHistory()
+    dirHistoryStack(new QUndoStack())
 {
     fileModel->setRootPath(QDir::homePath());
     fileModel->setFilter(QDir::AllEntries | QDir::NoDot);
+
+    undoPathAction = dirHistoryStack->createUndoAction(this, "&Undo");
+    redoPathAction = dirHistoryStack->createRedoAction(this, "&Redo");
+
+    connect(undoPathAction, &QAction::triggered, this, [this](){
+        emit pathChanged();
+    });
+    connect(redoPathAction, &QAction::triggered, this, [this](){
+        emit pathChanged();
+    });
 }
 
 /*!
@@ -55,5 +70,6 @@ QModelIndex ExplorerManager::currentPathIndex() const
  */
 void ExplorerManager::setCurrentPath(const QString &newPath)
 {
-    fileModel->setRootPath(newPath);
+    dirHistoryStack->push(new OpenDirCommand(newPath, currentPath(), fileModel));
+    emit pathChanged();
 }

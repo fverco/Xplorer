@@ -3,20 +3,33 @@
 
 #include <QFileSystemModel>
 #include <QSharedPointer>
+#include <QObject>
+#include <QUndoStack>
 
-class ExplorerManager
+/*!
+ * \brief The class responsible for managing data shown in the file explorer.
+ */
+class ExplorerManager : public QObject
 {
+    Q_OBJECT
+
 public:
-    ExplorerManager();
+    explicit ExplorerManager(QObject *parent = nullptr);
     ~ExplorerManager();
     QSharedPointer<QFileSystemModel> getFileSystemModel() const;
     QString currentPath() const;
     QModelIndex currentPathIndex() const;
     void setCurrentPath(const QString &newPath);
 
+    QAction *undoPathAction;    ///< Triggers the explorer to undo its last path change.
+    QAction *redoPathAction;    ///< Triggers the explorer to redo its previously undone path change.
+
+signals:
+    void pathChanged(); ///< Emitted when the directory path is changed.
+
 private:
-    QSharedPointer<QFileSystemModel> fileModel;    ///< The explorer's file model.
-    QList<QString> dirHistory;                     ///< The explorer's directory access history.
+    QSharedPointer<QFileSystemModel> fileModel;     ///< The explorer's file model.
+    QSharedPointer<QUndoStack> dirHistoryStack;     ///< The explorer's directory access history.
 };
 
 #endif // EXPLORERMANAGER_H
