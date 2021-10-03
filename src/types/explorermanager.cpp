@@ -78,7 +78,7 @@ void ExplorerManager::setCurrentPath(const QString &newPath)
  * \brief This function will undo the last setCurrentPath() call.
  * \see setCurrentPath()
  */
-void ExplorerManager::undoPath()
+void ExplorerManager::undoPath() const
 {
     undoPathAction->trigger();
 }
@@ -88,7 +88,25 @@ void ExplorerManager::undoPath()
  * \see setCurrentPath()
  * \see undoPath()
  */
-void ExplorerManager::redoPath()
+void ExplorerManager::redoPath() const
 {
     redoPathAction->trigger();
+}
+
+/*!
+ * \brief Checks if the directory history stack can be undone.
+ * \return A Boolean value
+ */
+bool ExplorerManager::canUndoPath() const
+{
+    return (dirHistoryStack->index() > 0) ? true : false;
+}
+
+/*!
+ * \brief Checks if the directory history stack can be redone.
+ * \return A Boolean value
+ */
+bool ExplorerManager::canRedoPath() const
+{
+    return (dirHistoryStack->index() != dirHistoryStack->count()) ? true : false;
 }

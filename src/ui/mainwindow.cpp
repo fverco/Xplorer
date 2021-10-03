@@ -7,6 +7,7 @@
 #include <QFileIconProvider>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QPushButton>
 
 /*!
  * \brief The constructor of the main window.
@@ -91,6 +92,12 @@ void MainWindow::initializeExplorerUi()
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::closeApp);
     connect(&explorerMan1, &ExplorerManager::pathChanged, this, &MainWindow::refreshExplorer1);
     connect(&explorerMan2, &ExplorerManager::pathChanged, this, &MainWindow::refreshExplorer2);
+    connect(&explorerMan1, &ExplorerManager::pathChanged, this, [this](){
+        refreshBackAndForwardButtons(explorerMan1, ui->btnBackExplorer1, ui->btnForwardExplorer1);
+    });
+    connect(&explorerMan2, &ExplorerManager::pathChanged, this, [this](){
+        refreshBackAndForwardButtons(explorerMan2, ui->btnBackExplorer2, ui->btnForwardExplorer2);
+    });
 }
 
 /*!
@@ -173,6 +180,31 @@ void MainWindow::refreshExplorer1()
 void MainWindow::refreshExplorer2()
 {
     ui->lvExplorer2->setRootIndex(explorerMan2.currentPathIndex());
+}
+
+/*!
+ * \brief Enables/disables the back and forward buttons if there is a possibility to undo and/or redo.
+ * \param explMan = The explorer manager from which the information will be obtained
+ * \param backButton = The back button in the explorer
+ * \param forwardButton = The forward button in the explorer
+ */
+void MainWindow::refreshBackAndForwardButtons(const ExplorerManager &explMan, QPushButton *backButton, QPushButton *forwardButton)
+{
+    if (explMan.canUndoPath() && !backButton->isEnabled()) {
+        backButton->setEnabled(true);
+    } else {
+        if (!explMan.canUndoPath() && backButton->isEnabled()) {
+            backButton->setEnabled(false);
+        }
+    }
+
+    if (explMan.canRedoPath() && !forwardButton->isEnabled()) {
+        forwardButton->setEnabled(true);
+    } else {
+        if (!explMan.canRedoPath() && forwardButton->isEnabled()) {
+            forwardButton->setEnabled(false);
+        }
+    }
 }
 
 

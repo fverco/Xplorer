@@ -20,8 +20,10 @@ public:
     QString currentPath() const;
     QModelIndex currentPathIndex() const;
     void setCurrentPath(const QString &newPath);
-    void undoPath();
-    void redoPath();
+    void undoPath() const;
+    void redoPath() const;
+    bool canUndoPath() const;
+    bool canRedoPath() const;
 
 signals:
     void pathChanged(); ///< Emitted when the directory path is changed.

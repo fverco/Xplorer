@@ -7,6 +7,7 @@
 #include <QMainWindow>
 
 class QFileSystemModel;
+class QPushButton;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -42,5 +43,6 @@ private:
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
 
     void initializeExplorerUi();
+    void refreshBackAndForwardButtons(const ExplorerManager &explMan, QPushButton *backButton, QPushButton *forwardButton);
 };
 #endif // MAINWINDOW_H
