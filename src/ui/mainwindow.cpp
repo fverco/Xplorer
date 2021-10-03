@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QKeyEvent>
 
 /*!
  * \brief The constructor of the main window.
@@ -39,6 +40,40 @@ MainWindow::~MainWindow()
 void MainWindow::closeApp()
 {
     this->close();
+}
+
+/*!
+ * \brief Catches the key press events of both explorers' QListViews and calls functions.
+ * \param watched = The list view being watched
+ * \param event = The event that was caught
+ * \return A Boolean that is true if the event is stopped from being passed on to the watched object, and false if it is not.
+ */
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->lvExplorer1 && event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
+        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+            openFileIndex(explorerMan1, ui->lvExplorer1->currentIndex());
+        } else {
+            if (keyEvent->key() == Qt::Key_Backspace && explorerMan1.canUndoPath()) {
+                explorerMan1.undoPath();
+            }
+        }
+    }
+    else {
+        if (watched == ui->lvExplorer2 && event->type() == QEvent::KeyPress) {
+            QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
+            if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+                openFileIndex(explorerMan2, ui->lvExplorer2->currentIndex());
+            } else {
+                if (keyEvent->key() == Qt::Key_Backspace && explorerMan2.canUndoPath()) {
+                    explorerMan2.undoPath();
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 /*!
@@ -98,40 +133,30 @@ void MainWindow::initializeExplorerUi()
     connect(&explorerMan2, &ExplorerManager::pathChanged, this, [this](){
         refreshBackAndForwardButtons(explorerMan2, ui->btnBackExplorer2, ui->btnForwardExplorer2);
     });
+
+    // Add event filter to the explorers for handling key presses.
+    ui->lvExplorer1->installEventFilter(this);
+    ui->lvExplorer2->installEventFilter(this);
 }
 
 /*!
- * \brief Function executed when a file/folder in Explorer 1 is double clicked.
+ * \brief Function executed when a file/folder in Explorer 1 is double clicked. This will call the openFileIndex() function.
  * \param index = The index of the file/folder
+ * \see openFileIndex()
  */
 void MainWindow::on_lvExplorer1_doubleClicked(const QModelIndex &index)
 {
-    QFileInfo newDir(explorerMan1.currentPath() + "/" + index.data().toString());
-
-    if (newDir.isDir()) {
-        explorerMan1.setCurrentPath(newDir.path() + "/" + newDir.fileName());
-    } else {
-        if (!actionMan.openFile(newDir)) {
-            QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
-        }
-    }
+    openFileIndex(explorerMan1, index);
 }
 
 /*!
- * \brief Function executed when a file/folder in Explorer 2 is double clicked.
+ * \brief Function executed when a file/folder in Explorer 2 is double clicked. This will call the openFileIndex() function.
  * \param index = The index of the file/folder
+ * \see openFileIndex()
  */
 void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
 {
-    QFileInfo newDir(explorerMan2.currentPath() + "/" + index.data().toString());
-
-    if (newDir.isDir()) {
-        explorerMan2.setCurrentPath(newDir.path() + "/" + newDir.fileName());
-    } else {
-        if (!actionMan.openFile(newDir)) {
-            QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
-        }
-    }
+    openFileIndex(explorerMan2, index);
 }
 
 /*!
@@ -207,4 +232,20 @@ void MainWindow::refreshBackAndForwardButtons(const ExplorerManager &explMan, QP
     }
 }
 
+/*!
+ * \brief Opens the file/folder currently selected by the given explorer.
+ * \param explMan = The explorer
+ * \param fileIndex = The index of the selected file/folder
+ */
+void MainWindow::openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex)
+{
+    QFileInfo newDir(explMan.currentPath() + "/" + fileIndex.data().toString());
 
+    if (newDir.isDir()) {
+        explMan.setCurrentPath(newDir.path() + "/" + newDir.fileName());
+    } else {
+        if (!actionMan.openFile(newDir)) {
+            QMessageBox::critical(this, "File Error", "An unknown error occurred while trying to open the file.");
+        }
+    }
+}

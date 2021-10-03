@@ -24,6 +24,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void closeApp();
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
     void on_lvExplorer1_doubleClicked(const QModelIndex &index);
@@ -44,5 +45,6 @@ private:
 
     void initializeExplorerUi();
     void refreshBackAndForwardButtons(const ExplorerManager &explMan, QPushButton *backButton, QPushButton *forwardButton);
+    void openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex);
 };
 #endif // MAINWINDOW_H
