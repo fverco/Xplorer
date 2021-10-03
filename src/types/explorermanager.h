@@ -20,9 +20,8 @@ public:
     QString currentPath() const;
     QModelIndex currentPathIndex() const;
     void setCurrentPath(const QString &newPath);
-
-    QAction *undoPathAction;    ///< Triggers the explorer to undo its last path change.
-    QAction *redoPathAction;    ///< Triggers the explorer to redo its previously undone path change.
+    void undoPath();
+    void redoPath();
 
 signals:
     void pathChanged(); ///< Emitted when the directory path is changed.
@@ -30,6 +29,8 @@ signals:
 private:
     QSharedPointer<QFileSystemModel> fileModel;     ///< The explorer's file model.
     QSharedPointer<QUndoStack> dirHistoryStack;     ///< The explorer's directory access history.
+    QAction *undoPathAction;    ///< Triggers the explorer to undo its last path change.
+    QAction *redoPathAction;    ///< Triggers the explorer to redo its previously undone path change.
 };
 
 #endif // EXPLORERMANAGER_H

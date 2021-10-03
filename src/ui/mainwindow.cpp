@@ -132,7 +132,7 @@ void MainWindow::on_lvExplorer2_doubleClicked(const QModelIndex &index)
  */
 void MainWindow::on_btnBackExplorer1_clicked()
 {
-    explorerMan1.undoPathAction->trigger();
+    explorerMan1.undoPath();
 }
 
 /*!
@@ -140,7 +140,7 @@ void MainWindow::on_btnBackExplorer1_clicked()
  */
 void MainWindow::on_btnForwardExplorer1_clicked()
 {
-    explorerMan1.redoPathAction->trigger();
+    explorerMan1.redoPath();
 }
 
 /*!
@@ -148,7 +148,7 @@ void MainWindow::on_btnForwardExplorer1_clicked()
  */
 void MainWindow::on_btnBackExplorer2_clicked()
 {
-    explorerMan2.undoPathAction->trigger();
+    explorerMan2.undoPath();
 }
 
 /*!
@@ -156,7 +156,7 @@ void MainWindow::on_btnBackExplorer2_clicked()
  */
 void MainWindow::on_btnForwardExplorer2_clicked()
 {
-    explorerMan2.redoPathAction->trigger();
+    explorerMan2.redoPath();
 }
 
 /*!

@@ -73,3 +73,22 @@ void ExplorerManager::setCurrentPath(const QString &newPath)
     dirHistoryStack->push(new OpenDirCommand(newPath, currentPath(), fileModel));
     emit pathChanged();
 }
+
+/*!
+ * \brief This function will undo the last setCurrentPath() call.
+ * \see setCurrentPath()
+ */
+void ExplorerManager::undoPath()
+{
+    undoPathAction->trigger();
+}
+
+/*!
+ * \brief This function will redo the setCurrentPath() call that was previously undone by undoPath().
+ * \see setCurrentPath()
+ * \see undoPath()
+ */
+void ExplorerManager::redoPath()
+{
+    redoPathAction->trigger();
+}
