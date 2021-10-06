@@ -8,6 +8,7 @@
 
 class QFileSystemModel;
 class QPushButton;
+class QGroupBox;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -42,8 +43,10 @@ private:
     ExplorerManager explorerMan1;    ///< The object responsible for managing explorer 1.
     ExplorerManager explorerMan2;    ///< The object responsible for managing explorer 2.
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
+    QGroupBox *activeExplorer;       ///< The explorer currently in focus.
 
     void initializeExplorerUi();
+    void setActiveExplorer(QGroupBox *newActiveExplorer);
     void refreshBackAndForwardButtons(const ExplorerManager &explMan, QPushButton *backButton, QPushButton *forwardButton);
     void openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex);
 };

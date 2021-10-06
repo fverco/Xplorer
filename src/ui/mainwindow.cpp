@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QKeyEvent>
+#include <QGroupBox>
 
 /*!
  * \brief The constructor of the main window.
@@ -20,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
       dirModel(new QFileSystemModel(this)),
       explorerMan1(),
       explorerMan2(),
-      actionMan()
+      actionMan(),
+      activeExplorer(nullptr)
 {
     ui->setupUi(this);
     initializeExplorerUi();
@@ -50,27 +52,45 @@ void MainWindow::closeApp()
  */
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched == ui->lvExplorer1 && event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
-        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-            openFileIndex(explorerMan1, ui->lvExplorer1->currentIndex());
-        } else {
-            if (keyEvent->key() == Qt::Key_Backspace && explorerMan1.canUndoPath()) {
-                explorerMan1.undoPath();
-            }
-        }
-    }
-    else {
-        if (watched == ui->lvExplorer2 && event->type() == QEvent::KeyPress) {
+    switch(event->type()) {
+        case QEvent::KeyPress:
+
+        if (watched == ui->lvExplorer1) {
             QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
             if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-                openFileIndex(explorerMan2, ui->lvExplorer2->currentIndex());
+                openFileIndex(explorerMan1, ui->lvExplorer1->currentIndex());
             } else {
-                if (keyEvent->key() == Qt::Key_Backspace && explorerMan2.canUndoPath()) {
-                    explorerMan2.undoPath();
+                if (keyEvent->key() == Qt::Key_Backspace && explorerMan1.canUndoPath()) {
+                    explorerMan1.undoPath();
                 }
             }
         }
+        else {
+            if (watched == ui->lvExplorer2) {
+                QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
+                if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+                    openFileIndex(explorerMan2, ui->lvExplorer2->currentIndex());
+                } else {
+                    if (keyEvent->key() == Qt::Key_Backspace && explorerMan2.canUndoPath()) {
+                        explorerMan2.undoPath();
+                    }
+                }
+            }
+        }
+        break;
+
+    case QEvent::FocusIn:
+        if (ui->gbExplorer1 == watched || ui->gbExplorer1->children().contains(watched)) {
+            setActiveExplorer(ui->gbExplorer1);
+        } else {
+            if (ui->gbExplorer2 == watched || ui->gbExplorer2->children().contains(watched)) {
+                setActiveExplorer(ui->gbExplorer2);
+            }
+        }
+        break;
+
+    default:
+        return false;
     }
 
     return false;
@@ -134,9 +154,48 @@ void MainWindow::initializeExplorerUi()
         refreshBackAndForwardButtons(explorerMan2, ui->btnBackExplorer2, ui->btnForwardExplorer2);
     });
 
-    // Add event filter to the explorers for handling key presses.
-    ui->lvExplorer1->installEventFilter(this);
-    ui->lvExplorer2->installEventFilter(this);
+    // Add event filter to the explorer group boxes and everything in it for handling key presses.
+    ui->gbExplorer1->installEventFilter(this);
+
+    for (int i(0); i < ui->gbExplorer1->children().count(); ++i) {
+        ui->gbExplorer1->children().at(i)->installEventFilter(this);
+    }
+
+    ui->gbExplorer2->installEventFilter(this);
+
+    for (int i(0); i < ui->gbExplorer2->children().count(); ++i) {
+        ui->gbExplorer2->children().at(i)->installEventFilter(this);
+    }
+}
+
+/*!
+ * \brief Gives the explorer the appearance of having active focus.
+ * \param explorerGroupBox = The group box that contains all the components of the explorer.
+ * \note You should only use a QGroupBox that encapsulates the components of the explorer.
+ */
+void MainWindow::setActiveExplorer(QGroupBox *newActiveExplorer)
+{
+    if (activeExplorer != nullptr) {
+        // Make the current active explorer inactive.
+        activeExplorer->setStyleSheet("");
+    }
+
+    // Set the style of the new active explorer.
+    newActiveExplorer->setStyleSheet("QGroupBox { "
+                            "    border: 2px solid gray; "
+                            "    border-radius: 3px; "
+                            "    margin-top: 1em; "
+                            "} "
+
+                            "QGroupBox::title { "
+                            "   background-color: transparent; "
+                            "   subcontrol-position: top left; "
+                            "   padding:2 13px; "
+                            "   padding-top: -36px; "
+                                    "}");
+
+    // Assign the new active explorer.
+    activeExplorer = newActiveExplorer;
 }
 
 /*!
