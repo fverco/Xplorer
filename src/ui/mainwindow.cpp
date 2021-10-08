@@ -21,11 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
       dirModel(new QFileSystemModel(this)),
       explorerMan1(),
       explorerMan2(),
-      actionMan(),
-      activeExplorer(nullptr)
+      actionMan()
 {
     ui->setupUi(this);
     initializeExplorerUi();
+    setActiveExplorer(Explorer::Explorer1, ui->gbExplorer1);
 }
 
 /*!
@@ -53,26 +53,20 @@ void MainWindow::closeApp()
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     switch(event->type()) {
-        case QEvent::KeyPress:
-
+    case QEvent::KeyPress:
         if (watched == ui->lvExplorer1) {
             QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
-            if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-                openFileIndex(explorerMan1, ui->lvExplorer1->currentIndex());
-            } else {
-                if (keyEvent->key() == Qt::Key_Backspace && explorerMan1.canUndoPath()) {
-                    explorerMan1.undoPath();
-                }
-            }
+            catchExplorerKeyEvent(explorerMan1, ui->lvExplorer1, keyEvent);
         }
         else {
             if (watched == ui->lvExplorer2) {
                 QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
-                if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-                    openFileIndex(explorerMan2, ui->lvExplorer2->currentIndex());
-                } else {
-                    if (keyEvent->key() == Qt::Key_Backspace && explorerMan2.canUndoPath()) {
-                        explorerMan2.undoPath();
+                catchExplorerKeyEvent(explorerMan2, ui->lvExplorer2, keyEvent);
+            } else {
+                if (watched == ui->tvFileSys) {
+                    QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
+                    if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+                        openDirectoryInExplorer(getTreeDirPath(ui->tvFileSys->currentIndex()));
                     }
                 }
             }
@@ -81,10 +75,10 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
     case QEvent::FocusIn:
         if (ui->gbExplorer1 == watched || ui->gbExplorer1->children().contains(watched)) {
-            setActiveExplorer(ui->gbExplorer1);
+            setActiveExplorer(Explorer::Explorer1, ui->gbExplorer1);
         } else {
             if (ui->gbExplorer2 == watched || ui->gbExplorer2->children().contains(watched)) {
-                setActiveExplorer(ui->gbExplorer2);
+                setActiveExplorer(Explorer::Explorer2, ui->gbExplorer2);
             }
         }
         break;
@@ -166,6 +160,8 @@ void MainWindow::initializeExplorerUi()
     for (int i(0); i < ui->gbExplorer2->children().count(); ++i) {
         ui->gbExplorer2->children().at(i)->installEventFilter(this);
     }
+
+    ui->tvFileSys->installEventFilter(this);
 }
 
 /*!
@@ -173,29 +169,30 @@ void MainWindow::initializeExplorerUi()
  * \param explorerGroupBox = The group box that contains all the components of the explorer.
  * \note You should only use a QGroupBox that encapsulates the components of the explorer.
  */
-void MainWindow::setActiveExplorer(QGroupBox *newActiveExplorer)
+void MainWindow::setActiveExplorer(const Explorer &explorer, QGroupBox *explorerGroupBox)
 {
-    if (activeExplorer != nullptr) {
+    if (activeExplorer.second != nullptr) {
         // Make the current active explorer inactive.
-        activeExplorer->setStyleSheet("");
+        activeExplorer.second->setStyleSheet("");
     }
 
     // Set the style of the new active explorer.
-    newActiveExplorer->setStyleSheet("QGroupBox { "
-                            "    border: 2px solid gray; "
-                            "    border-radius: 3px; "
-                            "    margin-top: 1em; "
-                            "} "
+    explorerGroupBox->setStyleSheet("QGroupBox { "
+                                    "    border: 2px solid gray; "
+                                    "    border-radius: 3px; "
+                                    "    margin-top: 1em; "
+                                    "} "
 
-                            "QGroupBox::title { "
-                            "   background-color: transparent; "
-                            "   subcontrol-position: top left; "
-                            "   padding:2 13px; "
-                            "   padding-top: -36px; "
+                                    "QGroupBox::title { "
+                                    "   background-color: transparent; "
+                                    "   subcontrol-position: top left; "
+                                    "   padding:2 13px; "
+                                    "   padding-top: -36px; "
                                     "}");
 
     // Assign the new active explorer.
-    activeExplorer = newActiveExplorer;
+    activeExplorer.first = explorer;
+    activeExplorer.second = explorerGroupBox;
 }
 
 /*!
@@ -308,3 +305,74 @@ void MainWindow::openFileIndex(ExplorerManager &explMan, const QModelIndex &file
         }
     }
 }
+
+/*!
+ * \brief Opens the given path in the active explorer.
+ * \param path = The directory path
+ */
+void MainWindow::openDirectoryInExplorer(const QString &path)
+{
+    QFileInfo newDir(path);
+
+    if (newDir.isDir()) {
+        switch(activeExplorer.first) {
+        case Explorer::Explorer1:
+            explorerMan1.setCurrentPath(path);
+            break;
+
+        case Explorer::Explorer2:
+            explorerMan2.setCurrentPath(path);
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+/*!
+ * \brief Retrieves a full path to the given directory index.
+ * \param dirIndex = The directory index from the tree view
+ * \return A QString with the full path
+ */
+QString MainWindow::getTreeDirPath(const QModelIndex &dirIndex)
+{
+    QModelIndex parent(dirIndex.parent());
+    QString path(dirIndex.data().toString());
+
+    while(parent.isValid()) {
+        path.prepend(parent.data().toString() + "/");
+        parent = parent.parent();
+    }
+
+    path = path.remove(0, 1);
+
+    return path;
+}
+
+/*!
+ * \brief Catches a key event for an explorer and performs their appropriate actions.
+ * \param explMan = The explorer manager
+ * \param explView = The list view of the explorer
+ * \param keyEvent = The event containing the key pressed
+ */
+void MainWindow::catchExplorerKeyEvent(ExplorerManager &explMan, QListView *explView, QKeyEvent *keyEvent)
+{
+    if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+        openFileIndex(explMan, explView->currentIndex());
+    } else {
+        if (keyEvent->key() == Qt::Key_Backspace && explMan.canUndoPath()) {
+            explMan.undoPath();
+        }
+    }
+}
+
+/*!
+ * \brief When the file system tree view is double clicked, it opens the currently selected folder in the active explorer.
+ * \param index = The index of the tree view
+ */
+void MainWindow::on_tvFileSys_doubleClicked(const QModelIndex &index)
+{
+    openDirectoryInExplorer(getTreeDirPath(index));
+}
+

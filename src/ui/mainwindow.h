@@ -5,14 +5,21 @@
 #include "../types/explorermanager.h"
 
 #include <QMainWindow>
+#include <QPair>
 
 class QFileSystemModel;
 class QPushButton;
 class QGroupBox;
+class QListView;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+enum Explorer {
+    Explorer1,  ///< 0
+    Explorer2   ///< 1
+};
 
 /*!
  * \brief The main window of the application.
@@ -36,6 +43,7 @@ private slots:
     void on_btnForwardExplorer2_clicked();
     void refreshExplorer1();
     void refreshExplorer2();
+    void on_tvFileSys_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;              ///< The object containing all the ui elements.
@@ -43,11 +51,14 @@ private:
     ExplorerManager explorerMan1;    ///< The object responsible for managing explorer 1.
     ExplorerManager explorerMan2;    ///< The object responsible for managing explorer 2.
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
-    QGroupBox *activeExplorer;       ///< The explorer currently in focus.
+    QPair<Explorer, QGroupBox*> activeExplorer; ///< The explorer currently in focus. The first value is an enum containing the explorer number and the second value is a pointer to the explorer's groupbox.
 
     void initializeExplorerUi();
-    void setActiveExplorer(QGroupBox *newActiveExplorer);
+    void setActiveExplorer(const Explorer &explorer, QGroupBox *explorerGroupBox);
     void refreshBackAndForwardButtons(const ExplorerManager &explMan, QPushButton *backButton, QPushButton *forwardButton);
     void openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex);
+    void openDirectoryInExplorer(const QString &path);
+    QString getTreeDirPath(const QModelIndex &dirIndex);
+    void catchExplorerKeyEvent(ExplorerManager &explMan, QListView *explView, QKeyEvent *keyEvent);
 };
 #endif // MAINWINDOW_H
