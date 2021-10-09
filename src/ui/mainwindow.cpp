@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QGroupBox>
+#include <QStringView>
 
 /*!
  * \brief The constructor of the main window.
@@ -21,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
       dirModel(new QFileSystemModel(this)),
       explorerMan1(),
       explorerMan2(),
-      actionMan()
+      actionMan(),
+      systemOs(getSystemOs())
 {
     ui->setupUi(this);
     initializeExplorerUi();
@@ -331,11 +333,57 @@ void MainWindow::openDirectoryInExplorer(const QString &path)
 }
 
 /*!
- * \brief Retrieves a full path to the given directory index.
+ * \brief Detects the system's OS and retrieves the full path for the given tree view index.
  * \param dirIndex = The directory index from the tree view
  * \return A QString with the full path
+ * \see getWindowsDirPath()
+ * \see getLinuxDirPath()
  */
 QString MainWindow::getTreeDirPath(const QModelIndex &dirIndex)
+{
+    switch(systemOs) {
+        case OS::Windows:
+            return getWindowsDirPath(dirIndex);
+        case OS::Linux:
+            return getLinuxDirPath(dirIndex);
+        default:
+            return "";
+    }
+}
+
+/*!
+ * \brief On a Windows system this retrieves a full path to the given tree view index.
+ * \param dirIndex = The directory index from the tree view
+ * \return A QString with the full path
+ * \note This is only meant for running on Windows systems. This might have unkown effects on other OSes.
+ */
+QString MainWindow::getWindowsDirPath(const QModelIndex &dirIndex)
+{
+    QModelIndex parent(dirIndex.parent()),nextParent(parent.parent());
+    QString path(dirIndex.data().toString()), lastParentString("");
+
+    while (nextParent.isValid()) {
+        path.prepend(parent.data().toString() + "/");
+        parent = parent.parent();
+        nextParent = parent.parent();
+    }
+
+    lastParentString = parent.data().toString();
+
+    QStringView driveLetter(lastParentString);
+    driveLetter = driveLetter.sliced(driveLetter.lastIndexOf(':') - 1, 2);
+    path.prepend(driveLetter.toString() + "/");
+
+    return path;
+}
+
+/*!
+ * \brief On a Linux system this retrieves a full path to the given tree view index.
+ * \param dirIndex = The directory index from the tree view
+ * \return A QString with the full path
+ * \note This is only meant for running on Linux systems. This might have unkown effects on other OSes.
+ */
+QString MainWindow::getLinuxDirPath(const QModelIndex &dirIndex)
 {
     QModelIndex parent(dirIndex.parent());
     QString path(dirIndex.data().toString());
@@ -363,6 +411,25 @@ void MainWindow::catchExplorerKeyEvent(ExplorerManager &explMan, QListView *expl
     } else {
         if (keyEvent->key() == Qt::Key_Backspace && explMan.canUndoPath()) {
             explMan.undoPath();
+        }
+    }
+}
+
+/*!
+ * \brief Detects the runnning system OS.
+ * \return An OS enum stating the operating system. Returns OS::Unknown if the OS is not recognized.
+ */
+OS MainWindow::getSystemOs()
+{
+    QString kernel(QSysInfo::kernelType());
+
+    if (kernel == "winnt") {
+        return OS::Windows;
+    } else {
+        if (kernel == "linux") {
+            return OS::Linux;
+        } else {
+            return OS::Unknown;
         }
     }
 }

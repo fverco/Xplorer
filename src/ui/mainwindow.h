@@ -16,6 +16,12 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+enum OS {
+    Unknown,    ///< 0
+    Windows,    ///< 1
+    Linux       ///< 2
+};
+
 enum Explorer {
     Explorer1,  ///< 0
     Explorer2   ///< 1
@@ -51,6 +57,7 @@ private:
     ExplorerManager explorerMan1;    ///< The object responsible for managing explorer 1.
     ExplorerManager explorerMan2;    ///< The object responsible for managing explorer 2.
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
+    OS systemOs;
     QPair<Explorer, QGroupBox*> activeExplorer; ///< The explorer currently in focus. The first value is an enum containing the explorer number and the second value is a pointer to the explorer's groupbox.
 
     void initializeExplorerUi();
@@ -59,6 +66,9 @@ private:
     void openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex);
     void openDirectoryInExplorer(const QString &path);
     QString getTreeDirPath(const QModelIndex &dirIndex);
+    QString getWindowsDirPath(const QModelIndex &dirIndex);
+    QString getLinuxDirPath(const QModelIndex &dirIndex);
     void catchExplorerKeyEvent(ExplorerManager &explMan, QListView *explView, QKeyEvent *keyEvent);
+    OS getSystemOs();
 };
 #endif // MAINWINDOW_H
