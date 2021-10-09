@@ -4,6 +4,7 @@
 #include "../types/actionmanager.h"
 #include "../types/explorermanager.h"
 #include "../types/treeviewmanager.h"
+#include "../types/explorersplitter.h"
 
 #include <QMainWindow>
 #include <QPair>
@@ -12,6 +13,7 @@ class QFileSystemModel;
 class QPushButton;
 class QGroupBox;
 class QListView;
+class QFileIconProvider;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -52,7 +54,9 @@ private:
     ExplorerManager explorerMan1;    ///< The object responsible for managing explorer 1.
     ExplorerManager explorerMan2;    ///< The object responsible for managing explorer 2.
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
-    QPair<Explorer, QGroupBox*> activeExplorer; ///< The explorer currently in focus. The first value is an enum containing the explorer number and the second value is a pointer to the explorer's groupbox.
+    QPair<Explorer, QGroupBox*> activeExplorer;     ///< The explorer currently in focus. The first value is an enum containing the explorer number and the second value is a pointer to the explorer's groupbox.
+    QSharedPointer<ExplorerSplitter> viewSplitter;  ///< The line that splits the explorers and tree view.
+    QSharedPointer<QFileIconProvider> iconProvider; ///< The object that provides icons to the explorers and tree view.
 
     void initializeExplorerUi();
     void setActiveExplorer(const Explorer &explorer, QGroupBox *explorerGroupBox);

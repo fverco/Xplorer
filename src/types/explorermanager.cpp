@@ -35,6 +35,7 @@ ExplorerManager::ExplorerManager(QObject *parent) :
 ExplorerManager::~ExplorerManager()
 {
     fileModel.clear();
+    dirHistoryStack.clear();
 }
 
 /*!

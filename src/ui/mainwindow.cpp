@@ -5,9 +5,7 @@
 #include <QSplitter>
 #include <QtDebug>
 #include <QFileIconProvider>
-#include <QFileInfo>
 #include <QMessageBox>
-#include <QPushButton>
 #include <QKeyEvent>
 #include <QGroupBox>
 
@@ -21,7 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
       treeViewMan(),
       explorerMan1(),
       explorerMan2(),
-      actionMan()
+      actionMan(),
+      viewSplitter(new ExplorerSplitter(Qt::Horizontal, this)),
+      iconProvider(new QFileIconProvider())
 {
     ui->setupUi(this);
     initializeExplorerUi();
@@ -41,6 +41,8 @@ MainWindow::~MainWindow()
  */
 void MainWindow::closeApp()
 {
+    viewSplitter.clear();
+    iconProvider.clear();
     this->close();
 }
 
@@ -96,8 +98,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 void MainWindow::initializeExplorerUi()
 {
     // Add splitter between the file views.
-    ExplorerSplitter *viewSplitter(new ExplorerSplitter(Qt::Horizontal, this));
-    ui->hLayoutFiles->addWidget(viewSplitter);
+    ui->hLayoutFiles->addWidget(viewSplitter.data());
     viewSplitter->addWidget(ui->tvFileSys);
     viewSplitter->addWidget(ui->gbExplorer1);
     viewSplitter->addWidget(ui->gbExplorer2);
@@ -124,10 +125,9 @@ void MainWindow::initializeExplorerUi()
     });
 
     // Assign a file icon provider to each model.
-    QFileIconProvider *iconProvider(new QFileIconProvider());
-    treeViewMan.getFileSystemModel()->setIconProvider(iconProvider);
-    explorerMan1.getFileSystemModel()->setIconProvider(iconProvider);
-    explorerMan1.getFileSystemModel()->setIconProvider(iconProvider);
+    treeViewMan.getFileSystemModel()->setIconProvider(iconProvider.data());
+    explorerMan1.getFileSystemModel()->setIconProvider(iconProvider.data());
+    explorerMan1.getFileSystemModel()->setIconProvider(iconProvider.data());
 
     // Set fixed width of the back and forward buttons.
     ui->btnBackExplorer1->setFixedWidth(50);
