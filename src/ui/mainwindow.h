@@ -3,6 +3,7 @@
 
 #include "../types/actionmanager.h"
 #include "../types/explorermanager.h"
+#include "../types/treeviewmanager.h"
 
 #include <QMainWindow>
 #include <QPair>
@@ -15,12 +16,6 @@ class QListView;
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
-
-enum OS {
-    Unknown,    ///< 0
-    Windows,    ///< 1
-    Linux       ///< 2
-};
 
 enum Explorer {
     Explorer1,  ///< 0
@@ -53,11 +48,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;              ///< The object containing all the ui elements.
-    QFileSystemModel *dirModel;      ///< The tree view's directory model.
+    TreeViewManager treeViewMan;     ///< The manager for the tree view.
     ExplorerManager explorerMan1;    ///< The object responsible for managing explorer 1.
     ExplorerManager explorerMan2;    ///< The object responsible for managing explorer 2.
     ActionManager actionMan;         ///< The object responsible for performing actions on files.
-    OS systemOs;
     QPair<Explorer, QGroupBox*> activeExplorer; ///< The explorer currently in focus. The first value is an enum containing the explorer number and the second value is a pointer to the explorer's groupbox.
 
     void initializeExplorerUi();
@@ -65,10 +59,6 @@ private:
     void refreshBackAndForwardButtons(const ExplorerManager &explMan, QPushButton *backButton, QPushButton *forwardButton);
     void openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex);
     void openDirectoryInExplorer(const QString &path);
-    QString getTreeDirPath(const QModelIndex &dirIndex);
-    QString getWindowsDirPath(const QModelIndex &dirIndex);
-    QString getLinuxDirPath(const QModelIndex &dirIndex);
     void catchExplorerKeyEvent(ExplorerManager &explMan, QListView *explView, QKeyEvent *keyEvent);
-    OS getSystemOs();
 };
 #endif // MAINWINDOW_H

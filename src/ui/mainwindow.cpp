@@ -10,7 +10,6 @@
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QGroupBox>
-#include <QStringView>
 
 /*!
  * \brief The constructor of the main window.
@@ -19,11 +18,10 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      dirModel(new QFileSystemModel(this)),
+      treeViewMan(),
       explorerMan1(),
       explorerMan2(),
-      actionMan(),
-      systemOs(getSystemOs())
+      actionMan()
 {
     ui->setupUi(this);
     initializeExplorerUi();
@@ -68,7 +66,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 if (watched == ui->tvFileSys) {
                     QKeyEvent *keyEvent(static_cast<QKeyEvent*>(event));
                     if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
-                        openDirectoryInExplorer(getTreeDirPath(ui->tvFileSys->currentIndex()));
+                        openDirectoryInExplorer(TreeViewManager::getTreeDirPath(ui->tvFileSys->currentIndex()));
                     }
                 }
             }
@@ -105,10 +103,8 @@ void MainWindow::initializeExplorerUi()
     viewSplitter->addWidget(ui->gbExplorer2);
 
     // Add file models to the file views.
-    dirModel->setRootPath(QDir::homePath());
-    dirModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
-    ui->tvFileSys->setModel(dirModel);
-    ui->tvFileSys->setRootIndex(dirModel->index(QDir::homePath()));
+    ui->tvFileSys->setModel(treeViewMan.getFileSystemModel().data());
+    ui->tvFileSys->setRootIndex(treeViewMan.currentPathIndex());
 
     ui->lvExplorer1->setModel(explorerMan1.getFileSystemModel().data());
     ui->lvExplorer1->setRootIndex(explorerMan1.currentPathIndex());
@@ -129,7 +125,7 @@ void MainWindow::initializeExplorerUi()
 
     // Assign a file icon provider to each model.
     QFileIconProvider *iconProvider(new QFileIconProvider());
-    dirModel->setIconProvider(iconProvider);
+    treeViewMan.getFileSystemModel()->setIconProvider(iconProvider);
     explorerMan1.getFileSystemModel()->setIconProvider(iconProvider);
     explorerMan1.getFileSystemModel()->setIconProvider(iconProvider);
 
@@ -333,72 +329,6 @@ void MainWindow::openDirectoryInExplorer(const QString &path)
 }
 
 /*!
- * \brief Detects the system's OS and retrieves the full path for the given tree view index.
- * \param dirIndex = The directory index from the tree view
- * \return A QString with the full path
- * \see getWindowsDirPath()
- * \see getLinuxDirPath()
- */
-QString MainWindow::getTreeDirPath(const QModelIndex &dirIndex)
-{
-    switch(systemOs) {
-        case OS::Windows:
-            return getWindowsDirPath(dirIndex);
-        case OS::Linux:
-            return getLinuxDirPath(dirIndex);
-        default:
-            return "";
-    }
-}
-
-/*!
- * \brief On a Windows system this retrieves a full path to the given tree view index.
- * \param dirIndex = The directory index from the tree view
- * \return A QString with the full path
- * \note This is only meant for running on Windows systems. This might have unkown effects on other OSes.
- */
-QString MainWindow::getWindowsDirPath(const QModelIndex &dirIndex)
-{
-    QModelIndex parent(dirIndex.parent()),nextParent(parent.parent());
-    QString path(dirIndex.data().toString()), lastParentString("");
-
-    while (nextParent.isValid()) {
-        path.prepend(parent.data().toString() + "/");
-        parent = parent.parent();
-        nextParent = parent.parent();
-    }
-
-    lastParentString = parent.data().toString();
-
-    QStringView driveLetter(lastParentString);
-    driveLetter = driveLetter.sliced(driveLetter.lastIndexOf(':') - 1, 2);
-    path.prepend(driveLetter.toString() + "/");
-
-    return path;
-}
-
-/*!
- * \brief On a Linux system this retrieves a full path to the given tree view index.
- * \param dirIndex = The directory index from the tree view
- * \return A QString with the full path
- * \note This is only meant for running on Linux systems. This might have unkown effects on other OSes.
- */
-QString MainWindow::getLinuxDirPath(const QModelIndex &dirIndex)
-{
-    QModelIndex parent(dirIndex.parent());
-    QString path(dirIndex.data().toString());
-
-    while(parent.isValid()) {
-        path.prepend(parent.data().toString() + "/");
-        parent = parent.parent();
-    }
-
-    path = path.remove(0, 1);
-
-    return path;
-}
-
-/*!
  * \brief Catches a key event for an explorer and performs their appropriate actions.
  * \param explMan = The explorer manager
  * \param explView = The list view of the explorer
@@ -416,30 +346,11 @@ void MainWindow::catchExplorerKeyEvent(ExplorerManager &explMan, QListView *expl
 }
 
 /*!
- * \brief Detects the runnning system OS.
- * \return An OS enum stating the operating system. Returns OS::Unknown if the OS is not recognized.
- */
-OS MainWindow::getSystemOs()
-{
-    QString kernel(QSysInfo::kernelType());
-
-    if (kernel == "winnt") {
-        return OS::Windows;
-    } else {
-        if (kernel == "linux") {
-            return OS::Linux;
-        } else {
-            return OS::Unknown;
-        }
-    }
-}
-
-/*!
  * \brief When the file system tree view is double clicked, it opens the currently selected folder in the active explorer.
  * \param index = The index of the tree view
  */
 void MainWindow::on_tvFileSys_doubleClicked(const QModelIndex &index)
 {
-    openDirectoryInExplorer(getTreeDirPath(index));
+    openDirectoryInExplorer(TreeViewManager::getTreeDirPath(index));
 }
 
