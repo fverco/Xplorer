@@ -4,6 +4,9 @@
 #include <QFileSystemModel>
 #include <QSharedPointer>
 
+/*!
+ * \brief The class responsible for managing data shown in the tree view.
+ */
 class TreeViewManager
 {
 public:
