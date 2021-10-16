@@ -20,7 +20,31 @@
       <item>
        <layout class="QHBoxLayout" name="hLayoutFiles">
         <item>
-         <widget class="QTreeView" name="tvFileSys"/>
+         <widget class="QGroupBox" name="gbTreeView">
+          <property name="styleSheet">
+           <string notr="true">QGroupBox {
+	border: 0;
+}</string>
+          </property>
+          <property name="title">
+           <string/>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QComboBox" name="cbDrives"/>
+             </item>
+             <item>
+              <widget class="QTreeView" name="tvFileSys"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="gbExplorer1">
@@ -164,7 +188,7 @@
      <x>0</x>
      <y>0</y>
      <width>765</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
