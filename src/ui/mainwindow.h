@@ -48,6 +48,7 @@ private slots:
     void refreshExplorer2();
     void setTreeViewPath(const QString &newPath);
     void on_tvFileSys_doubleClicked(const QModelIndex &index);
+    void on_btnRefreshDrives_clicked();
 
 private:
     Ui::MainWindow *ui;              ///< The object containing all the ui elements.

@@ -404,3 +404,11 @@ void MainWindow::on_tvFileSys_doubleClicked(const QModelIndex &index)
     openDirectoryInExplorer(TreeViewManager::getTreeDirPath(index));
 }
 
+/*!
+ * \brief Refreshes the drive list.
+ */
+void MainWindow::on_btnRefreshDrives_clicked()
+{
+    refreshDriveList();
+}
+
