@@ -46,6 +46,7 @@ private slots:
     void on_btnForwardExplorer2_clicked();
     void refreshExplorer1();
     void refreshExplorer2();
+    void setTreeViewPath(const QString &newPath);
     void on_tvFileSys_doubleClicked(const QModelIndex &index);
 
 private:
@@ -64,5 +65,6 @@ private:
     void openFileIndex(ExplorerManager &explMan, const QModelIndex &fileIndex);
     void openDirectoryInExplorer(const QString &path);
     void catchExplorerKeyEvent(ExplorerManager &explMan, QListView *explView, QKeyEvent *keyEvent);
+    void refreshDriveList();
 };
 #endif // MAINWINDOW_H

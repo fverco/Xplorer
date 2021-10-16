@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QGroupBox>
+#include <QStorageInfo>
 
 /*!
  * \brief The constructor of the main window.
@@ -99,7 +100,7 @@ void MainWindow::initializeExplorerUi()
 {
     // Add splitter between the file views.
     ui->hLayoutFiles->addWidget(viewSplitter.data());
-    viewSplitter->addWidget(ui->tvFileSys);
+    viewSplitter->addWidget(ui->gbTreeView);
     viewSplitter->addWidget(ui->gbExplorer1);
     viewSplitter->addWidget(ui->gbExplorer2);
 
@@ -139,6 +140,7 @@ void MainWindow::initializeExplorerUi()
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::closeApp);
     connect(&explorerMan1, &ExplorerManager::pathChanged, this, &MainWindow::refreshExplorer1);
     connect(&explorerMan2, &ExplorerManager::pathChanged, this, &MainWindow::refreshExplorer2);
+    connect(ui->cbDrives, &QComboBox::currentTextChanged, this, &MainWindow::setTreeViewPath);
     connect(&explorerMan1, &ExplorerManager::pathChanged, this, [this](){
         refreshBackAndForwardButtons(explorerMan1, ui->btnBackExplorer1, ui->btnForwardExplorer1);
     });
@@ -160,6 +162,9 @@ void MainWindow::initializeExplorerUi()
     }
 
     ui->tvFileSys->installEventFilter(this);
+
+    // Add important directories to the tree view.
+    refreshDriveList();
 }
 
 /*!
@@ -262,6 +267,23 @@ void MainWindow::refreshExplorer2()
 }
 
 /*!
+ * \brief Assigns a new path for the tree view.
+ * \param newPath = The new path
+ */
+void MainWindow::setTreeViewPath(const QString &newPath)
+{
+    QDir path(newPath);
+
+    if (path.exists()) {
+        treeViewMan.setCurrentPath(newPath);
+        ui->tvFileSys->setRootIndex(treeViewMan.currentPathIndex());
+    } else {
+        QMessageBox::warning(this, "Directory not found", "The selected directory no longer exists. Please ensure that the drive is still connected.");
+        refreshDriveList();
+    }
+}
+
+/*!
  * \brief Enables/disables the back and forward buttons if there is a possibility to undo and/or redo.
  * \param explMan = The explorer manager from which the information will be obtained
  * \param backButton = The back button in the explorer
@@ -343,6 +365,34 @@ void MainWindow::catchExplorerKeyEvent(ExplorerManager &explMan, QListView *expl
             explMan.undoPath();
         }
     }
+}
+
+/*!
+ * \brief Refreshes the list of drives for the tree view.
+ * \note This contains preprocessor directives for detecting the OS at compile time.
+ */
+void MainWindow::refreshDriveList()
+{
+#if defined (Q_OS_LINUX)
+    // Clean up the list.
+    ui->cbDrives->clear();
+
+    // Add the common directories.
+    ui->cbDrives->addItem("/");
+    ui->cbDrives->addItem("/home");
+    ui->cbDrives->addItem(QDir::homePath());
+
+    // Add the connected external storage devices.
+    foreach (const QStorageInfo &storage, QStorageInfo::mountedVolumes()) {
+        if (storage.isValid() && storage.isReady()) {
+            QString path(storage.rootPath());
+
+            if (!storage.isReadOnly() && (path.startsWith("/run/media") || path.startsWith("/run/mnt"))) {
+                ui->cbDrives->addItem(path);
+            }
+        }
+    }
+#endif
 }
 
 /*!
