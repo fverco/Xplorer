@@ -7,7 +7,6 @@
 TreeViewManager::TreeViewManager() :
     dirModel(new QFileSystemModel())
 {
-    dirModel->setRootPath(QDir::homePath());
     dirModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
 }
 
@@ -61,12 +60,12 @@ void TreeViewManager::setCurrentPath(const QString &newPath)
  * \brief Retrieves the full path to the given directory index.
  * \param dirIndex = The directory index from the tree view
  * \return A QString with the full path
- * \note This contains preprocessor definitions for detecting the OS at compile time.
+ * \note This contains preprocessor directives for detecting the OS at compile time.
  */
 QString TreeViewManager::getTreeDirPath(const QModelIndex &dirIndex)
 {
 #if defined (Q_OS_WIN)
-    QModelIndex parent(dirIndex.parent()),nextParent(parent.parent());
+    QModelIndex parent(dirIndex.parent()), nextParent(parent.parent());
     QString path(dirIndex.data().toString()), lastParentString("");
 
     while (nextParent.isValid()) {
