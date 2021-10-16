@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "aboutdialog.h"
 #include "../types/explorersplitter.h"
 
 #include <QSplitter>
@@ -34,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
  */
 MainWindow::~MainWindow()
 {
+    viewSplitter.clear();
+    iconProvider.clear();
+    aboutDialog.clear();
     delete ui;
 }
 
@@ -94,6 +98,17 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 }
 
 /*!
+ * \brief Opens an instance of the about dialog.
+ * \note This also destroys any existing instance of the about dialog.
+ */
+void MainWindow::openAboutDialog()
+{
+    aboutDialog.clear();
+    aboutDialog = QSharedPointer<AboutDialog>::create(this);
+    aboutDialog->show();
+}
+
+/*!
  * \brief Initializes the core UI components for the file explorers.
  */
 void MainWindow::initializeExplorerUi()
@@ -147,6 +162,7 @@ void MainWindow::initializeExplorerUi()
     connect(&explorerMan2, &ExplorerManager::pathChanged, this, [this](){
         refreshBackAndForwardButtons(explorerMan2, ui->btnBackExplorer2, ui->btnForwardExplorer2);
     });
+    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::openAboutDialog);
 
     // Add event filter to the explorer group boxes and everything in it for handling key presses.
     ui->gbExplorer1->installEventFilter(this);

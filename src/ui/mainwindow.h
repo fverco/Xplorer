@@ -14,6 +14,7 @@ class QPushButton;
 class QGroupBox;
 class QListView;
 class QFileIconProvider;
+class AboutDialog;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -36,6 +37,7 @@ public:
     ~MainWindow();
     void closeApp();
     bool eventFilter(QObject *watched, QEvent *event) override;
+    void openAboutDialog();
 
 private slots:
     void on_lvExplorer1_doubleClicked(const QModelIndex &index);
@@ -59,6 +61,7 @@ private:
     QPair<Explorer, QGroupBox*> activeExplorer;     ///< The explorer currently in focus. The first value is an enum containing the explorer number and the second value is a pointer to the explorer's groupbox.
     QSharedPointer<ExplorerSplitter> viewSplitter;  ///< The line that splits the explorers and tree view.
     QSharedPointer<QFileIconProvider> iconProvider; ///< The object that provides icons to the explorers and tree view.
+    QSharedPointer<AboutDialog> aboutDialog;    ///< The about dialog.
 
     void initializeExplorerUi();
     void setActiveExplorer(const Explorer &explorer, QGroupBox *explorerGroupBox);
