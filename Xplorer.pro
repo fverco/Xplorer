@@ -16,6 +16,7 @@ SOURCES += \
     src/types/explorersplitterhandle.cpp \
     src/types/opendircommand.cpp \
     src/types/treeviewmanager.cpp \
+    src/ui/aboutdialog.cpp \
     src/ui/mainwindow.cpp
 
 HEADERS += \
@@ -25,9 +26,11 @@ HEADERS += \
     src/types/explorersplitterhandle.h \
     src/types/opendircommand.h \
     src/types/treeviewmanager.h \
+    src/ui/aboutdialog.h \
     src/ui/mainwindow.h
 
 FORMS += \
+    src/ui/aboutdialog.ui \
     src/ui/mainwindow.ui
 
 TRANSLATIONS += \
