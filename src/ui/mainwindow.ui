@@ -94,7 +94,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>&lt;</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -110,7 +110,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>&gt;</string>
+                  <string/>
                  </property>
                  <property name="default">
                   <bool>false</bool>
@@ -162,7 +162,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>&lt;</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -178,7 +178,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>&gt;</string>
+                  <string/>
                  </property>
                 </widget>
                </item>

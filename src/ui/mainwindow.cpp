@@ -184,6 +184,10 @@ void MainWindow::initializeExplorerUi()
 
     // Add icons to buttons.
     ui->btnRefreshDrives->setIcon(QIcon(":/images/refresh.png"));
+    ui->btnBackExplorer1->setIcon(QIcon(":/images/left_arrow.png"));
+    ui->btnBackExplorer2->setIcon(QIcon(":/images/left_arrow.png"));
+    ui->btnForwardExplorer1->setIcon(QIcon(":/images/right_arrow.png"));
+    ui->btnForwardExplorer2->setIcon(QIcon(":/images/right_arrow.png"));
 }
 
 /*!
