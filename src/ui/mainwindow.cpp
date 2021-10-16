@@ -181,6 +181,9 @@ void MainWindow::initializeExplorerUi()
 
     // Add important directories to the tree view.
     refreshDriveList();
+
+    // Add icons to buttons.
+    ui->btnRefreshDrives->setIcon(QIcon(":/images/refresh.png"));
 }
 
 /*!
