@@ -9,7 +9,14 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QGroupBox>
+
+#if defined(Q_OS_WINDOWS)
+#include <QFileInfoList>
+#endif
+
+#if defined(Q_OS_LINUX)
 #include <QStorageInfo>
+#endif
 
 /*!
  * \brief The constructor of the main window.
@@ -396,6 +403,19 @@ void MainWindow::catchExplorerKeyEvent(ExplorerManager &explMan, QListView *expl
  */
 void MainWindow::refreshDriveList()
 {
+#if defined (Q_OS_WINDOWS)
+    // Clean up the list.
+    ui->cbDrives->clear();
+
+    // Get drive list.
+    QFileInfoList driveList(QDir::drives());
+
+    // Add the drives to the combobox.
+    for (int i(0); i < driveList.length(); ++i) {
+        ui->cbDrives->addItem(driveList.at(i).absolutePath());
+    }
+#endif
+
 #if defined (Q_OS_LINUX)
     // Clean up the list.
     ui->cbDrives->clear();
