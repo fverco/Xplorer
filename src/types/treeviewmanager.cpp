@@ -2,7 +2,7 @@
 
 /*!
  * \brief The constructor
- * \note This willl initialize dirModel with the home path as its current path and will only display all folders.
+ * \note This will make the dirModel only display folders.
  */
 TreeViewManager::TreeViewManager() :
     dirModel(new QFileSystemModel())
