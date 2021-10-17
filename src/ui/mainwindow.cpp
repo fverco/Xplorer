@@ -129,6 +129,8 @@ void MainWindow::initializeExplorerUi()
     // Add file models to the file views.
     ui->tvFileSys->setModel(treeViewMan.getFileSystemModel().data());
     ui->tvFileSys->setRootIndex(treeViewMan.currentPathIndex());
+    ui->tvFileSys->setColumnWidth(0, 250);   // Set the Name column size to 250.
+    ui->tvFileSys->setColumnHidden(2, true); // Hide the file type column (since all files in the tree view are folders).
 
     ui->lvExplorer1->setModel(explorerMan1.getFileSystemModel().data());
     ui->lvExplorer1->setRootIndex(explorerMan1.currentPathIndex());
