@@ -70,5 +70,7 @@ private:
     void openDirectoryInExplorer(const QString &path);
     void catchExplorerKeyEvent(ExplorerManager &explMan, QListView *explView, QKeyEvent *keyEvent);
     void refreshDriveList();
+    void loadSettings();
+    void saveSettings();
 };
 #endif // MAINWINDOW_H

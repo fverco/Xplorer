@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QGroupBox>
+#include <QSettings>
 
 #if defined(Q_OS_WINDOWS)
 #include <QFileInfoList>
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     initializeExplorerUi();
+    loadSettings();
     setActiveExplorer(Explorer::Explorer1, ui->gbExplorer1);
 }
 
@@ -42,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
  */
 MainWindow::~MainWindow()
 {
+    saveSettings();
     viewSplitter.clear();
     iconProvider.clear();
     aboutDialog.clear();
@@ -438,6 +441,68 @@ void MainWindow::refreshDriveList()
         }
     }
 #endif
+}
+
+/*!
+ * \brief Load QSettings for the window objects.
+ * \note This function may only be called if all the UI elements (espesially the combo boxes containing the directories) are fully loaded.
+ *
+ * This will load information of the MainWindow size and the splitter positions and assign them accordingly.
+ */
+void MainWindow::loadSettings()
+{
+    QSettings settings("Fverco", "Xplorer");
+    QVariant windowSize(settings.value("WindowSize")),
+            splitterSizes(settings.value("SplitterSizes")),
+            treeViewDir(settings.value("TreeViewDir")),
+            explorer1Dir(settings.value("Explorer1Dir")),
+            explorer2Dir(settings.value("Explorer2Dir"));
+    QDir dir;
+
+
+    if (windowSize != QVariant()) {
+        this->restoreGeometry(windowSize.toByteArray());
+    }
+
+    if (splitterSizes != QVariant()) {
+        viewSplitter->restoreState(splitterSizes.toByteArray());
+    }
+
+    if (treeViewDir != QVariant()) {
+        int comboBoxIndex(ui->cbDrives->findText(treeViewDir.toString()));
+        if (comboBoxIndex != -1) {
+            ui->cbDrives->setCurrentIndex(comboBoxIndex);
+        }
+    }
+
+    if (explorer1Dir != QVariant()) {
+        dir.setPath(explorer1Dir.toString());
+        if (dir.exists()) {
+            explorerMan1.setCurrentPath(dir.path());
+        }
+    }
+
+    if (explorer2Dir != QVariant()) {
+        dir.setPath(explorer2Dir.toString());
+        if (dir.exists()) {
+            explorerMan2.setCurrentPath(dir.path());
+        }
+    }
+}
+
+/*!
+ * \brief Save QSettings for the window objects.
+ *
+ * This will save information of the MainWindow size and the splitter positions.
+ */
+void MainWindow::saveSettings()
+{
+    QSettings settings("Fverco", "Xplorer");
+    settings.setValue("WindowSize", this->saveGeometry());
+    settings.setValue("SplitterSizes", viewSplitter->saveState());
+    settings.setValue("TreeViewDir", ui->cbDrives->currentText());
+    settings.setValue("Explorer1Dir", ui->cbPathExplorer1->currentText());
+    settings.setValue("Explorer2Dir", ui->cbPathExplorer2->currentText());
 }
 
 /*!
