@@ -409,6 +409,9 @@ void MainWindow::catchExplorerKeyEvent(ExplorerManager &explMan, QListView *expl
 void MainWindow::refreshDriveList()
 {
 #if defined (Q_OS_WINDOWS)
+    // Get currently selected volume.
+    QString lastSelectedVolume(ui->cbDrives->currentText());
+
     // Clean up the list.
     ui->cbDrives->clear();
 
@@ -419,9 +422,18 @@ void MainWindow::refreshDriveList()
     for (int i(0); i < driveList.length(); ++i) {
         ui->cbDrives->addItem(driveList.at(i).absolutePath());
     }
+
+    // Select the previously selected volume.
+    int driveIndex(ui->cbDrives->findText(lastSelectedVolume));
+    if (driveIndex != -1) {
+        ui->cbDrives->setCurrentIndex(driveIndex);
+    }
 #endif
 
 #if defined (Q_OS_LINUX)
+    // Get currently selected volume.
+    QString lastSelectedVolume(ui->cbDrives->currentText());
+
     // Clean up the list.
     ui->cbDrives->clear();
 
@@ -432,7 +444,6 @@ void MainWindow::refreshDriveList()
 
     // Add the connected external storage devices.
     QList<QStorageInfo> volumes(QStorageInfo::mountedVolumes());
-
     for (int i(0); i < volumes.length(); ++i) {
         if (volumes.at(i).isValid() && volumes.at(i).isReady()) {
             QString path(volumes.at(i).rootPath());
@@ -441,6 +452,12 @@ void MainWindow::refreshDriveList()
                 ui->cbDrives->addItem(path);
             }
         }
+    }
+
+    // Select the previously selected volume.
+    int driveIndex(ui->cbDrives->findText(lastSelectedVolume));
+    if (driveIndex != -1) {
+        ui->cbDrives->setCurrentIndex(driveIndex);
     }
 #endif
 }
