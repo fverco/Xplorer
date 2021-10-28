@@ -431,11 +431,13 @@ void MainWindow::refreshDriveList()
     ui->cbDrives->addItem(QDir::homePath());
 
     // Add the connected external storage devices.
-    foreach (const QStorageInfo &storage, QStorageInfo::mountedVolumes()) {
-        if (storage.isValid() && storage.isReady()) {
-            QString path(storage.rootPath());
+    QList<QStorageInfo> volumes(QStorageInfo::mountedVolumes());
 
-            if (!storage.isReadOnly() && (path.startsWith("/run/media") || path.startsWith("/run/mnt"))) {
+    for (int i(0); i < volumes.length(); ++i) {
+        if (volumes.at(i).isValid() && volumes.at(i).isReady()) {
+            QString path(volumes.at(i).rootPath());
+
+            if (!volumes.at(i).isReadOnly() && (path.startsWith("/run/media") || path.startsWith("/run/mnt"))) {
                 ui->cbDrives->addItem(path);
             }
         }
