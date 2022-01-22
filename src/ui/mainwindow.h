@@ -51,6 +51,7 @@ private slots:
     void setTreeViewPath(const QString &newPath);
     void on_tvFileSys_doubleClicked(const QModelIndex &index);
     void on_btnRefreshDrives_clicked();
+    void contextMenuRequested(QListView* listView, const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;              ///< The object containing all the ui elements.
@@ -62,6 +63,7 @@ private:
     QSharedPointer<ExplorerSplitter> viewSplitter;  ///< The line that splits the explorers and tree view.
     QSharedPointer<QFileIconProvider> iconProvider; ///< The object that provides icons to the explorers and tree view.
     QSharedPointer<AboutDialog> aboutDialog;    ///< The about dialog.
+    QMenu *contextMenu;     ///< The context menu for the explorers.
 
     void initializeExplorerUi();
     void setActiveExplorer(const Explorer &explorer, QGroupBox *explorerGroupBox);

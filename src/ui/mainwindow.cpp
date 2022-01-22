@@ -31,7 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
       explorerMan2(),
       actionMan(),
       viewSplitter(new ExplorerSplitter(Qt::Horizontal, this)),
-      iconProvider(new QFileIconProvider())
+      iconProvider(new QFileIconProvider()),
+      contextMenu(new QMenu())
 {
     ui->setupUi(this);
     initializeExplorerUi();
@@ -200,6 +201,21 @@ void MainWindow::initializeExplorerUi()
     ui->btnBackExplorer2->setIcon(QIcon(":/images/left_arrow.png"));
     ui->btnForwardExplorer1->setIcon(QIcon(":/images/right_arrow.png"));
     ui->btnForwardExplorer2->setIcon(QIcon(":/images/right_arrow.png"));
+
+    // Connect the context menus to the item views.
+    ui->lvExplorer1->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->lvExplorer2->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->lvExplorer1, &QWidget::customContextMenuRequested, [this] (const QPoint &pos) {
+        this->contextMenuRequested(ui->lvExplorer1, pos);
+    });
+    connect(ui->lvExplorer2, &QWidget::customContextMenuRequested, [this] (const QPoint &pos) {
+        this->contextMenuRequested(ui->lvExplorer2, pos);
+    });
+
+    // Initialize the context menu items for the explorers.
+    QAction *openFile(new QAction("Open", contextMenu));
+    contextMenu->addAction(openFile);
 }
 
 /*!
@@ -539,5 +555,25 @@ void MainWindow::on_tvFileSys_doubleClicked(const QModelIndex &index)
 void MainWindow::on_btnRefreshDrives_clicked()
 {
     refreshDriveList();
+}
+
+/*!
+ * \brief Opens a context menu for file/folder manipulation.
+ * \param listView = The QListView where the context menu was requested
+ * \param pos = The location of the cursor in the QListView
+ */
+void MainWindow::contextMenuRequested(QListView* listView, const QPoint &pos)
+{
+    QModelIndex rightClickedItem(listView->indexAt(pos));
+    QPoint cursorLocation(listView->mapToGlobal(pos));
+
+    if (rightClickedItem.isValid() && rightClickedItem.data().toString() != "..") {
+       QAction *selectedAction(contextMenu->exec(cursorLocation));
+       contextMenu->close();
+
+       if (selectedAction) {
+           qDebug() << "Right clicked at item: " << rightClickedItem.data().toString() << Qt::endl;
+       }
+    }
 }
 
